@@ -4,21 +4,31 @@ import folium
 from streamlit_folium import st_folium
 
 # 제목
-st.title("최근 10년간 취업률 선그래프")
+st.title("최근 10년간 시·구별 고등학교 대입률")
 
-# 가상의 데이터 생성 (실제 데이터를 사용할 경우 여기만 수정하면 됨)
-years = list(range(2015, 2025))
-employment_rates = [65.2, 66.1, 67.0, 67.8, 68.3, 66.5, 65.9, 67.2, 68.0, 68.5]
+# 데이터 로드
+uploaded_file = st.file_uploader("CSV 파일 업로드", type=["csv"])
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
+    
+    # 연도는 인덱스로 설정
+    df.set_index("연도", inplace=True)
+    
+    # 시·구 선택
+    options = st.multiselect(
+        "확인할 시·구를 선택하세요:",
+        options=df.columns,
+        default=list(df.columns)
+    )
 
-# 데이터프레임 생성
-df = pd.DataFrame({
-    '연도': years,
-    '취업률 (%)': employment_rates
-})
+    if options:
+        # 선택한 시·구의 데이터만 추출
+        selected_data = df[options]
 
-# 선그래프 그리기
-st.line_chart(df.set_index('연도'))
-
-# 참고: 실제 데이터를 사용하려면 아래처럼 불러오세요.
-# df = pd.read_csv("employment_data.csv")
+        # 선그래프 출력
+        st.line_chart(selected_data)
+    else:
+        st.warning("하나 이상의 시·구를 선택해주세요.")
+else:
+    st.info("CSV 파일을 업로드해주세요. 첫 열은 '연도', 이후는 시·구명이 되어야 합니다.")
 
