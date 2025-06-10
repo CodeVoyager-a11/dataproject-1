@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import folium
+from streamlit_folium import st_folium
 
 # 제목
 st.title("최근 10년간 취업률 선그래프")
